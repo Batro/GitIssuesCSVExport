@@ -1,3 +1,5 @@
+#User manual
+
 This php script was written to retrieve GitHub issues automatically on a repository.
 
 To use it you only need the Curl library, and, of course, an access to a GitHub repository that contains issues.
