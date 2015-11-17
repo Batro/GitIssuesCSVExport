@@ -15,17 +15,22 @@ while ($b) {
     $content = fread($file, filesize('issue'.$a.'.json'));
     $issues = json_decode($content);
 
-// I retrieve milestone, issue number, state, title and description
+    // I retrieve milestone, issue number, state, title and description
     foreach ($issues as $i) {
-        if (isset($i->assignee->login) && isset($i->milestone->title)) {
-            echo $i->milestone->title . ";" . $i->number . ";" . $i->state . ";" . $i->assignee->login . ";" . $i->title . ";" . preg_replace("/(\r\n|\n|\r)/", " ", $i->body) . "\n";
-        } else if (isset($i->milestone)) {
-            echo $i->milestone->title . ";" . $i->number . ";" . $i->state . ";" . " " . ";" . $i->title . ";" . preg_replace("/(\r\n|\n|\r)/", " ", $i->body) . "\n";
-        } else if (isset($i->assignee)){
-            echo " " . ";" . $i->number . ";" . $i->state . ";" . $i->assignee->login . ";" . $i->title . ";" . preg_replace("/(\r\n|\n|\r)/", " ", $i->body) . "\n";
-        } else {
-            echo " " . ";" . $i->number . ";" . $i->state . ";" . " " . ";" . $i->title . ";" . preg_replace("/(\r\n|\n|\r)/", " ", $i->body) . "\n";
-        }
+        $milestone = isset($i->milestone) ? $i->milestone->title : '';
+        $assignee = isset($i->assignee) ? $i->assignee->login : '';
+
+        $row = array(
+            $milestone,
+            $i->number,
+            $i->state,
+            $assignee,
+            '"' . str_replace('"', '""', $i->title) . '"',
+            '"' . str_replace(['"', "\r\n"], ['""', "\r"], $i->body) . '"'
+        );
+
+        echo implode(';', $row) . "\n";
     }
+    fclose($file);
     ++$a;
 }
